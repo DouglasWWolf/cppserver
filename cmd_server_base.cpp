@@ -1,6 +1,9 @@
 #include <unistd.h>
+#include <stdarg.h>
 #include <vector>
 #include <string>
+#include <string.h>
+
 #include "cmd_server_base.h"
 using namespace std;
 
@@ -90,14 +93,29 @@ static void make_lower(string& s)
 
 //==========================================================================================================
 // convert_tabs_to_spaces() - Changes every tab to a space
+//
+// Returns 'true' if the input line contains non-whitespace data
 //==========================================================================================================
-static void convert_tabs_to_spaces(char* in)
+static bool convert_tabs_to_spaces(char* in)
 {
+    // For a moment, assume this line consists <only> of spaces and tabs
+    bool line_has_nonspace_data = false;
+    
+    // Loop through each character of the line
     while (*in)
     {
+        // If this character is a tab, make it a space
         if (*in == 9) *in = ' ';
+
+        // Keep track of whether or not this line is blank
+        if (*in != ' ') line_has_nonspace_data = true;
+        
+        // And point to the next character in the line
         ++in;
     }
+
+    // Tell the caller whether there is valid data on this line
+    return line_has_nonspace_data;
 }
 //==========================================================================================================
 
@@ -249,6 +267,7 @@ bool server_command_t::get_next(unsigned int *p_result)
 //==========================================================================================================
 void CCmdServerBase::main(void* p1, void* p2, void* p3)
 {
+
 wait_for_connection:
 
     char buffer[512];
@@ -272,20 +291,17 @@ wait_for_connection:
     // While the socket is open, read and handle input lines
     while (m_socket.get_line(buffer, sizeof buffer))
     {
-        // Convert tabs to spaces
-        convert_tabs_to_spaces(buffer);
-
-        // Parse the buffer into a vector of tokens
-        vector<string> tokens = parse_tokens(buffer);
-
-        // If the line is empty, ignore it
-        if (tokens.size() == 0) continue;
+        // Convert tabs to spaces, and ignore the line if it's blank
+        if (!convert_tabs_to_spaces(buffer)) continue;
 
         // If we're in verbose mode, show the user the line we just received
-        if (m_verbose) printf("> %s\n", buffer);
+        if (m_verbose) printf(">> %s\n", buffer);
+
+        // Parse the buffer into a vector of tokens
+        m_line = parse_tokens(buffer);
 
         // Go handle this command
-        handle_command(tokens);
+        handle_command();
     }
 
     // The socket has closed.   If we're in verbose mode, tell the user
@@ -310,3 +326,116 @@ void CCmdServerBase::start(cmd_server_t* p_params)
     spawn();   
 }
 //==========================================================================================================
+
+
+//==========================================================================================================
+// send() - Sends data to the other side of the connection
+//==========================================================================================================
+void CCmdServerBase::send(const char* buffer, int length)
+{
+    // If the caler didn't specify a length, compute it
+    if (length == -1) length = strlen(buffer);
+
+    // Don't send empty strings
+    if (length == 0) return;
+
+    // If we're in verbose mode, show the user what we're sending
+    if (m_verbose) printf("<< %s\n", buffer);
+
+    // Send the string to the connected client
+    m_socket.send(buffer, length);
+}
+//==========================================================================================================
+
+
+
+
+//==========================================================================================================
+// pass() - Reports OK (with optional parameters) to the client
+//==========================================================================================================
+void CCmdServerBase::pass(const char* fmt, ...)
+{
+    char buffer[512] = "ok\0";
+
+    // This is a pointer to the variable argument list
+    va_list ap;
+
+    // Point to the position immediately after the OK
+    char* out = buffer+2;
+
+    // If the caller gave us parameters to send...
+    if (fmt)
+    {
+        // Add a space after the OK
+        *out++ = ' ';
+
+        // Point to the first argument after the "fmt" parameter
+        va_start(ap, fmt);
+
+        // Perform a printf of our arguments into the buffer area
+        vsprintf(out, fmt, ap);
+
+        // Tell the system that we're done with the "ap"
+        va_end(ap);
+
+        // Find the nul-byte at the end of the buffer
+        out = strchr(buffer, 0);
+    }
+    
+
+    // Add a carriage return and linefeed
+    *out++ = '\r';
+    *out++ = '\n';
+
+    // And send that string to the client
+    send(buffer);
+}
+//==========================================================================================================
+
+
+
+//==========================================================================================================
+// fail() - Reports a failure (with optional parameters) to the client
+//========================================================a==================================================
+void CCmdServerBase::fail(const char* failure, const char* fmt, ...)
+{
+    char buffer[512] = "fail ";
+
+    // This is a pointer to the variable argument list
+    va_list ap;
+
+    // Stuff the failure code into the buffer
+    strcpy(buffer + 5, failure);
+
+    // Point to the position immediately after the failure message
+    char* out = strchr(buffer, 0);
+
+    // If the caller gave us parameters to send...
+    if (fmt)
+    {
+        // Add a space after the OK
+        *out++ = ' ';
+
+        // Point to the first argument after the "fmt" parameter
+        va_start(ap, fmt);
+
+        // Perform a printf of our arguments into the buffer area
+        vsprintf(out, fmt, ap);
+
+        // Tell the system that we're done with the "ap"
+        va_end(ap);
+
+        // Find the nul-byte at the end of the buffer
+        out = strchr(buffer, 0);
+    }
+   
+
+    // Add a carriage return and linefeed
+    *out++ = '\r';
+    *out++ = '\n';
+
+    // And send that string to the client
+    send(buffer);
+}
+//==========================================================================================================
+

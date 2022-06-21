@@ -12,7 +12,14 @@ public:
     // Default constructor
     CDemoServer() : CCmdServerBase() {}
 
+protected:
+
     // Whenever a command arrives, this will be called to handle it
-    void handle_command(std::vector<std::string>&);
+    void    handle_command();
+
+    // These are the handlers for each specific command
+    void    handle_add();
+    void    handle_sub();
+    void    handle_mul();
 
 };

@@ -2,6 +2,8 @@
 // cmd_server_base.h - Defines a base-class for a TCP command server
 //==========================================================================================================
 #pragma once
+#include <string>
+#include <vector>
 #include "cthread.h"
 #include "netsock.h"
 
@@ -33,6 +35,9 @@ protected:
 
     // This is the entry point when the server thread spawns
     void    main(void* p1=0, void* p2=0, void* p3=0);
+
+    // Over-ride this to handle commands
+    virtual void handle_command(std::vector<std::string>&) {}
 
 private:
 

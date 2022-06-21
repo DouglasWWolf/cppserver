@@ -5,11 +5,14 @@
 #include "cmd_server_base.h"
 
 
-class CServer : public CCmdServerBase
+class CDemoServer : public CCmdServerBase
 {
 public:
 
     // Default constructor
-    CServer() : CCmdServerBase() {}
+    CDemoServer() : CCmdServerBase() {}
 
-}
+    // Whenever a command arrives, this will be called to handle it
+    void handle_command(std::vector<std::string>&);
+
+};

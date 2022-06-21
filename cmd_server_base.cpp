@@ -92,7 +92,6 @@ static void convert_tabs_to_spaces(char* in)
 //==========================================================================================================
 void CCmdServerBase::main(void* p1, void* p2, void* p3)
 {
-
 wait_for_connection:
 
     char buffer[512];
@@ -128,12 +127,8 @@ wait_for_connection:
         // If we're in verbose mode, show the user the line we just received
         if (m_verbose) printf("> %s\n", buffer);
 
-        for (int i=0; i<3; ++i)
-        {
-            m_socket.sendf("I see %s\n", buffer);
-            printf("Counting %i\n", i);
-            usleep(1000000);
-        }
+        // Go handle this command
+        handle_command(tokens);
     }
 
     // The socket has closed.   If we're in verbose mode, tell the user

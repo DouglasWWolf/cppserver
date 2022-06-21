@@ -1,9 +1,9 @@
 //==========================================================================================================
 // cppserver - A demonstration of the CCmdServerBase class
 //==========================================================================================================
-#include "cmd_server_base.h"
+#include "demo_server.h"
 
-CCmdServerBase  sv;
+CDemoServer sv;
 
 cmd_server_t server_params;
 

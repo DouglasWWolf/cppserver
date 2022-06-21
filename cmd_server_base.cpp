@@ -340,7 +340,7 @@ void CCmdServerBase::send(const char* buffer, int length)
     if (length == 0) return;
 
     // If we're in verbose mode, show the user what we're sending
-    if (m_verbose) printf("<< %s\n", buffer);
+    if (m_verbose) printf("<< %s", buffer);
 
     // Send the string to the connected client
     m_socket.send(buffer, length);

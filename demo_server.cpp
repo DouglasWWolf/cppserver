@@ -11,7 +11,7 @@ using namespace std;
 void CDemoServer::handle_command()
 {
     // Fetch the name of the command
-    string cmd = m_line.get_cmd();
+    string cmd = m_line.get_first();
 
     if      (cmd == "add" ) handle_add();
     else if (cmd == "sub" ) handle_sub();

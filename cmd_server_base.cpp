@@ -121,9 +121,9 @@ static bool convert_tabs_to_spaces(char* in)
 
 
 //==========================================================================================================
-// get_cmd() - Returns the first token of the tokenized command string
+// get_first() - Returns the first token of the tokenized command string
 //==========================================================================================================
-string server_command_t::get_cmd(bool force_lower)
+string server_command_t::get_first(bool force_lower)
 {
     string cmd;
 
@@ -367,6 +367,38 @@ void CCmdServerBase::send(const char* buffer, int length)
     m_send_mutex.unlock();
 }
 //==========================================================================================================
+
+
+
+//==========================================================================================================
+// sendf() - Sends a printf-style formatt data to the the other side of a connected socket
+//
+// Returns either : -1 = An error occured
+//                  Anything else = the number of bytes actually sent.  The entire string will always be
+//                  sent unless the socket was closed by the other side
+//==========================================================================================================
+void CCmdServerBase::sendf(const char* fmt, ...)
+{
+    char buffer[1000];
+
+    // This is a pointer to the variable argument list
+    va_list ap;
+
+    // Point to the first argument after the "fmt" parameter
+    va_start(ap, fmt);
+
+    // Perform a printf of our arguments into the buffer area;
+    vsprintf(buffer, fmt, ap);
+
+    // Tell the system that we're done with the "ap"
+    va_end(ap);
+
+    // And send the buffer
+    send(buffer, strlen(buffer));
+}
+//==========================================================================================================
+
+
 
 
 

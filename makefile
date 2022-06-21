@@ -169,7 +169,7 @@ tarball:	clean
 #-----------------------------------------------------------------------------
 # This target appends/updates the dependencies list at the end of this file
 #-----------------------------------------------------------------------------
-depend:
+depend:	x86
 	makedepend -p$(X86_OBJ_DIR)/ -Y -I $(CPPFW) *.cpp 2>/dev/null
 
 
@@ -179,5 +179,5 @@ obj_x86/cmd_server_base.o: cmd_server_base.h cpp_framework/cthread.h
 obj_x86/cmd_server_base.o: cpp_framework/netsock.h
 obj_x86/demo_server.o: demo_server.h cmd_server_base.h
 obj_x86/demo_server.o: cpp_framework/cthread.h cpp_framework/netsock.h
-obj_x86/main.o: cmd_server_base.h cpp_framework/cthread.h
-obj_x86/main.o: cpp_framework/netsock.h
+obj_x86/main.o: demo_server.h cmd_server_base.h cpp_framework/cthread.h
+obj_x86/main.o: cpp_framework/netsock.h cpp_framework/cmd_line.h

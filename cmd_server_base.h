@@ -8,7 +8,7 @@
 #include "netsock.h"
 
 //----------------------------------------------------------------------------------------------------------
-// One of these must be passed to p1 during spawn()
+// One of these must be passed to the "start()" routine
 //----------------------------------------------------------------------------------------------------------
 struct cmd_server_t
 {
@@ -18,9 +18,10 @@ struct cmd_server_t
 //----------------------------------------------------------------------------------------------------------
 
 
-
 //----------------------------------------------------------------------------------------------------------
-// Command handlers in the derived class will be passed one of these objects
+// This is a vector of strings with some helper functions attached.
+//
+// These objects are fully copyable
 //----------------------------------------------------------------------------------------------------------
 class server_command_t
 {
@@ -39,7 +40,7 @@ public:
     void  operator=(const std::vector<std::string> rhs) {fill_tokens(rhs);}
 
     // Call this to fetch the command token
-    std::string get_cmd(bool force_lower = true);
+    std::string get_first(bool force_lower = true);
 
     // Call one of these to fetch the next command parameter
     bool        get_next(std::string  *p_result, bool force_lower = true);
@@ -80,6 +81,7 @@ public:
 
     // Sends data to the other side of the connection
     void    send(const char* buffer, int length = -1);
+    void    sendf(const char* fmt, ...);
 
     // Returns 'true' if the server is fully initialized and running
     bool    is_initialized() {return m_is_initialized;}

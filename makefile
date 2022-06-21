@@ -177,5 +177,7 @@ depend:
 
 obj_x86/cmd_server_base.o: cmd_server_base.h cpp_framework/cthread.h
 obj_x86/cmd_server_base.o: cpp_framework/netsock.h
+obj_x86/demo_server.o: demo_server.h cmd_server_base.h
+obj_x86/demo_server.o: cpp_framework/cthread.h cpp_framework/netsock.h
 obj_x86/main.o: cmd_server_base.h cpp_framework/cthread.h
 obj_x86/main.o: cpp_framework/netsock.h

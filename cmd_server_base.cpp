@@ -342,8 +342,14 @@ void CCmdServerBase::send(const char* buffer, int length)
     // If we're in verbose mode, show the user what we're sending
     if (m_verbose) printf("<< %s", buffer);
 
+    // Ensure that only one thread at a time can write to the socket
+    m_send_mutex.lock();
+    
     // Send the string to the connected client
     m_socket.send(buffer, length);
+
+    // Allow other threads to send data on over the socket
+    m_send_mutex.unlock();
 }
 //==========================================================================================================
 

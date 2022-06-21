@@ -5,17 +5,21 @@
 using namespace std;
 
 
+//==========================================================================================================
+// handle_command() - This gets called every time a command arrives on the server
+//==========================================================================================================
 void CDemoServer::handle_command()
 {
-
+    // Fetch the name of the command
     string cmd = m_line.get_cmd();
 
-    if      (cmd == "add") handle_add();
-    else if (cmd == "sub") handle_sub();
-    else if (cmd == "mul") handle_mul();
+    if      (cmd == "add" ) handle_add();
+    else if (cmd == "sub" ) handle_sub();
+    else if (cmd == "mul" ) handle_mul();
+    else if (cmd == "help") handle_help();
     else fail_syntax();
-
 }
+//==========================================================================================================
 
 
 //==========================================================================================================
@@ -80,6 +84,22 @@ void CDemoServer::handle_mul()
 }
 //==========================================================================================================
 
+
+//==========================================================================================================
+// handle_help() - Sends help text to the client
+//
+// Notes:  Like all list-style data, help-text should always begin with a space so that automated clients
+//         know when they've reached the end of the list
+//==========================================================================================================
+void CDemoServer::handle_help()
+{
+    send(" add <integer> <integer>\r\n");
+    send(" sub <integer> <integer>\r\n");
+    send(" mul <float> <float>\r\n");
+
+    pass();
+}
+//==========================================================================================================
 
 
 

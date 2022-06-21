@@ -21,5 +21,6 @@ protected:
     void    handle_add();
     void    handle_sub();
     void    handle_mul();
+    void    handle_help();
 
 };

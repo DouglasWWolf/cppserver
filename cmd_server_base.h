@@ -73,7 +73,7 @@ class CCmdServerBase : public CThread
 public:
 
     // Constructor
-    CCmdServerBase() : CThread() {}
+    CCmdServerBase() : CThread() {m_is_connected = m_is_initialized = false;}
 
     // Call this to start the server
     void    start(cmd_server_t *params);
@@ -81,13 +81,21 @@ public:
     // Sends data to the other side of the connection
     void    send(const char* buffer, int length = -1);
 
+    // Returns 'true' if the server is fully initialized and running
+    bool    is_initialized() {return m_is_initialized;}
+
+    // Returns 'true' if there is a client connected to this server
+    bool    is_connected() {return m_is_connected;}
+
+protected:
+
+    // Over-ride this to handle commands
+    virtual void handle_command() {}
+
 protected:
 
     // This is the entry point when the server thread spawns
     void    main(void* p1=0, void* p2=0, void* p3=0);
-
-    // Over-ride this to handle commands
-    virtual void handle_command() {}
 
     // When handle_command() gets called, the command will be in m_line
     server_command_t m_line;
@@ -101,13 +109,19 @@ protected:
     // This is a convenience method for reporting a syntax error
     void    fail_syntax() {send("fail syntax\r\n");}
 
-private:
+    // This will be true once the server thread is initialized and fully functional
+    bool    m_is_initialized;
+
+    // This will be true when there is a client connected
+    bool    m_is_connected;
+
+    // This is the TCP port we should listen on
+    int     m_port;
 
     // This will be true if we want verbose output for debugging
     bool    m_verbose;
-    
-    // This is the TCP port we should listen on
-    int     m_port;
+
+private:
 
     // This is the network socket that will be our server socket
     NetSock m_socket;

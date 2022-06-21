@@ -282,8 +282,17 @@ wait_for_connection:
         exit(1);
     }
 
+    // Our server thread is now fully initialized
+    m_is_initialized = true;
+
     // Wait for a client to connect to us
     m_socket.listen_and_accept();
+
+    // We we send data, we want it transmitted immediately
+    m_socket.set_nagling(false);
+
+    // When we get here, a client has connected to us
+    m_is_connected = true;
 
     // If we're in verbose mode, tell the user that we have a connection
     if (m_verbose) printf("A client has connected from %s\n", m_socket.get_peer_address().c_str());
@@ -303,6 +312,9 @@ wait_for_connection:
         // Go handle this command
         handle_command();
     }
+
+    // If we get here, the client has closed the connection
+    m_is_connected = false;
 
     // The socket has closed.   If we're in verbose mode, tell the user
     if (m_verbose) printf("Socket closed by client\n");
@@ -333,11 +345,14 @@ void CCmdServerBase::start(cmd_server_t* p_params)
 //==========================================================================================================
 void CCmdServerBase::send(const char* buffer, int length)
 {
-    // If the caler didn't specify a length, compute it
+    // If the caller didn't specify a length, compute it
     if (length == -1) length = strlen(buffer);
 
     // Don't send empty strings
     if (length == 0) return;
+
+    // If there's not a client connected, don't bother trying
+    if (!m_is_connected) return;
 
     // If we're in verbose mode, show the user what we're sending
     if (m_verbose) printf("<< %s", buffer);
@@ -352,7 +367,6 @@ void CCmdServerBase::send(const char* buffer, int length)
     m_send_mutex.unlock();
 }
 //==========================================================================================================
-
 
 
 

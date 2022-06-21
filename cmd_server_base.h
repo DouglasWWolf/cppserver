@@ -30,19 +30,20 @@ public:
     void  operator=(const std::vector<std::string> rhs) {m_tokens = rhs; m_next_index = 1;}
 
     // Call this to fetch the command token
-    std::string&    get_cmd();
+    std::string get_cmd(bool force_lower = true);
 
     // Call one of these to fetch the next command parameter
-    bool            get_next_token(std::string *p_result);
-    bool            get_next_float(double      *p_result);
-    bool            get_next_int  (int         *p_result);
+    bool        get_next(std::string  *p_result, bool force_lower = true);
+    bool        get_next(double       *p_result);
+    bool        get_next(int          *p_result);
+    bool        get_next(unsigned int *p_result);
 
     // Returns the number of parameters
-    int             param_count() {return m_tokens.size() - 1;}
+    int         param_count() {return m_tokens.size() - 1;}
 
 protected:
 
-    // This is the index of the next item to be retrieved via get_next_XXX()
+    // This is the index of the next item to be retrieved via get_next())
     int m_next_index;
 
     // The tokens

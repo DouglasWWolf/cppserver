@@ -74,6 +74,21 @@ static vector<string> parse_tokens(const char* in)
 
 
 //==========================================================================================================
+// make_lower() - Converts a std::string to lower-case
+//==========================================================================================================
+static void make_lower(string& s)
+{
+    char* in = (char*)s.c_str();
+    while (*in)
+    {
+        if (*in >= 'A' && *in <= 'Z') *in |= 32;
+        ++in;
+    }
+}
+//==========================================================================================================
+
+
+//==========================================================================================================
 // convert_tabs_to_spaces() - Changes every tab to a space
 //==========================================================================================================
 static void convert_tabs_to_spaces(char* in)
@@ -85,6 +100,148 @@ static void convert_tabs_to_spaces(char* in)
     }
 }
 //==========================================================================================================
+
+
+//==========================================================================================================
+// get_cmd() - Returns the first token of the tokenized command string
+//==========================================================================================================
+string server_command_t::get_cmd(bool force_lower)
+{
+    string cmd;
+
+    // If the m_tokens vector isn't empty, fetch the first token
+    if (m_tokens.size()) cmd = m_tokens[0];
+
+    // If we're supposed to force it to lower-case, do so
+    if (force_lower) make_lower(cmd);
+
+    // After a "get_cmd()", the next subsequent call to get_next_xxx() should return the first parameter
+    m_next_index = 1;
+
+    // Hand the caller the command
+    return cmd;
+}
+//==========================================================================================================
+
+
+//==========================================================================================================
+// get_next() - Fetches the next available paramter.
+//
+// Passed:  p_result    = Pointer to field where result should be stored
+//          force_lower = The result will be forced to lower-case if this is true
+//
+// Returns: true if there was a token available to fetch, otherwise false
+//==========================================================================================================
+bool server_command_t::get_next(string* p_result, bool force_lower)
+{
+    // If we're out of tokens, inform the caller
+    if (m_next_index >= m_tokens.size())
+    {
+        *p_result = "";
+        return false;
+    }
+
+    // Fetch the next available token    
+    string token = m_tokens[m_next_index++];
+
+    // If we've been asked to force it to lower-case, do so
+    if (force_lower) make_lower(token);
+
+    // Store the token into the caller's output field
+    *p_result = token;
+
+    // Tell the caller that he has a valid token
+    return true;
+}
+//==========================================================================================================
+
+
+//==========================================================================================================
+// get_next() - Fetches the next available paramter as a double-float
+//
+// Passed:  p_result  = Pointer to field where result should be stored
+//
+// Returns: true if there was a token available to fetch, otherwise false
+//==========================================================================================================
+bool server_command_t::get_next(double *p_result)
+{
+    string  token;
+
+    // If there are no more tokens available, tell the caller
+    if (!get_next(&token, false))
+    {
+        *p_result = 0;
+        return false;
+    }
+
+    // Otherwise, fill in the caller's output field
+    *p_result = stod(token);
+
+    // Tell the caller that he has a valid token
+    return true;
+}
+//==========================================================================================================
+
+
+//==========================================================================================================
+// get_next() - Fetches the next available paramter as an integer
+//
+// Passed:  p_result = Pointer to field where result should be stored
+//
+// Returns: true if there was a token available to fetch, otherwise false
+//
+// Notes:   the input token may be in either decimal, or in hex with the "0x" prefix
+//==========================================================================================================
+bool server_command_t::get_next(int *p_result)
+{
+    string  token;
+
+    // If there are no more tokens available, tell the caller
+    if (!get_next(&token, false))
+    {
+        *p_result = 0;
+        return false;
+    }
+
+    // Otherwise, fill in the caller's output field
+    *p_result = stoi(token, nullptr, 0);
+
+    // Tell the caller that he has a valid token
+    return true;
+}
+//==========================================================================================================
+
+
+
+//==========================================================================================================
+// get_next() - Fetches the next available paramter as an unsigned integer
+//
+// Passed:  p_result = Pointer to field where result should be stored
+//
+// Returns: true if there was a token available to fetch, otherwise false
+//
+// Notes:   the input token may be in either decimal, or in hex with the "0x" prefix
+//==========================================================================================================
+bool server_command_t::get_next(unsigned int *p_result)
+{
+    string  token;
+
+    // If there are no more tokens available, tell the caller
+    if (!get_next(&token, false))
+    {
+        *p_result = 0;
+        return false;
+    }
+
+    // Otherwise, fill in the caller's output field
+    *p_result = stoi(token, nullptr, 0);
+
+    // Tell the caller that he has a valid token
+    return true;
+}
+//==========================================================================================================
+
+
 
 
 //==========================================================================================================

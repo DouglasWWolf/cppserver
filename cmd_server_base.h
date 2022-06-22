@@ -103,13 +103,13 @@ protected:
     server_command_t m_line;
 
     // Call this to report an "ok" result to the client
-    void    pass(const char* fmt = nullptr, ...);
+    bool    pass(const char* fmt = nullptr, ...);
 
     // Call this to report a "fail" result to the client
-    void    fail(const char* failure, const char* fmt = nullptr, ...);
+    bool    fail(const char* failure, const char* fmt = nullptr, ...);
 
     // This is a convenience method for reporting a syntax error
-    void    fail_syntax() {send("FAIL syntax\r\n");}
+    bool    fail_syntax() {send("FAIL syntax\r\n"); return false;}
 
     // This will be true once the server thread is initialized and fully functional
     bool    m_is_initialized;

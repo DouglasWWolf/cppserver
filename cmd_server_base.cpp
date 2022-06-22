@@ -407,7 +407,7 @@ void CCmdServerBase::sendf(const char* fmt, ...)
 //==========================================================================================================
 // pass() - Reports OK (with optional parameters) to the client
 //==========================================================================================================
-void CCmdServerBase::pass(const char* fmt, ...)
+bool CCmdServerBase::pass(const char* fmt, ...)
 {
     va_list   ap;
     char      buffer[1000] = "OK";
@@ -444,6 +444,9 @@ void CCmdServerBase::pass(const char* fmt, ...)
 
     // And send that string to the client
     send(buffer);
+
+    // This function always returns true
+    return true;
 }
 //==========================================================================================================
 
@@ -452,7 +455,7 @@ void CCmdServerBase::pass(const char* fmt, ...)
 //==========================================================================================================
 // fail() - Reports a failure (with optional parameters) to the client
 //==========================================================================================================
-void CCmdServerBase::fail(const char* failure, const char* fmt, ...)
+bool CCmdServerBase::fail(const char* failure, const char* fmt, ...)
 {
     char      buffer[1000];
     va_list   ap;
@@ -493,6 +496,9 @@ void CCmdServerBase::fail(const char* failure, const char* fmt, ...)
 
     // And send that string to the client
     send(buffer);
+
+    // This function always returns false
+    return false;
 }
 //==========================================================================================================
 

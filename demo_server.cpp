@@ -25,19 +25,19 @@ void CDemoServer::handle_command()
 //==========================================================================================================
 // handle_add() - Adds two numbers and reports the result
 //==========================================================================================================
-void CDemoServer::handle_add()
+bool CDemoServer::handle_add()
 {
     int v1, v2;
 
     // Fetch the command parameters as integers
-    m_line.get_next(&v1);
-    m_line.get_next(&v2);
+    if (!m_line.get_next(&v1)) return fail_syntax();
+    if (!m_line.get_next(&v2)) return fail_syntax();
 
     // Perform the operation
     int result = v1 + v2;
 
     // Report the result to the caller
-    pass("%i", result);
+    return pass("%i", result);
 }
 //==========================================================================================================
 
@@ -46,11 +46,14 @@ void CDemoServer::handle_add()
 //==========================================================================================================
 // handle_sub() - Subtracts two integers and reports the result
 //==========================================================================================================
-void CDemoServer::handle_sub()
+bool CDemoServer::handle_sub()
 {
     int v1, v2;
 
     // Fetch the command parameters as integers
+    if (!m_line.get_next(&v1)) return fail_syntax();
+    if (!m_line.get_next(&v2)) return fail_syntax();
+
     m_line.get_next(&v1);
     m_line.get_next(&v2);
 
@@ -58,7 +61,7 @@ void CDemoServer::handle_sub()
     int result = v1 - v2;
 
     // Report the result to the caller
-    pass("%i", result);
+    return pass("%i", result);
 }
 //==========================================================================================================
 
@@ -68,19 +71,19 @@ void CDemoServer::handle_sub()
 //==========================================================================================================
 // handle_mul() - multiples two floating-point numbers and reports the result
 //==========================================================================================================
-void CDemoServer::handle_mul()
+bool CDemoServer::handle_mul()
 {
     double v1, v2;
 
     // Fetch the command parameters as integers
-    m_line.get_next(&v1);
-    m_line.get_next(&v2);
-
+    if (!m_line.get_next(&v1)) return fail_syntax();
+    if (!m_line.get_next(&v2)) return fail_syntax();
+    
     // Perform the operation
     double result = v1 * v2;
 
     // Report the result to the caller
-    pass("%1.4lf", result);
+    return pass("%1.4lf", result);
 }
 //==========================================================================================================
 
@@ -91,13 +94,13 @@ void CDemoServer::handle_mul()
 // Notes:  Like all list-style data, help-text should always begin with a space so that automated clients
 //         know when they've reached the end of the list
 //==========================================================================================================
-void CDemoServer::handle_help()
+bool CDemoServer::handle_help()
 {
     send(" add <integer> <integer>\r\n");
     send(" sub <integer> <integer>\r\n");
     send(" mul <float> <float>\r\n");
 
-    pass();
+    return pass();
 }
 //==========================================================================================================
 

@@ -18,9 +18,9 @@ protected:
     void    handle_command();
 
     // These are the handlers for each specific command
-    void    handle_add();
-    void    handle_sub();
-    void    handle_mul();
-    void    handle_help();
+    bool    handle_add();
+    bool    handle_sub();
+    bool    handle_mul();
+    bool    handle_help();
 
 };

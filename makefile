@@ -175,3 +175,16 @@ depend:	x86
 
 # DO NOT DELETE
 
+obj_x86/cmd_server_base.o: cmd_server_base.h cpp_framework/cthread.h
+obj_x86/cmd_server_base.o: cpp_framework/netsock.h
+obj_x86/demo_server.o: demo_server.h cmd_server_base.h
+obj_x86/demo_server.o: cpp_framework/cthread.h cpp_framework/netsock.h
+obj_x86/globals.o: globals.h demo_server.h cmd_server_base.h
+obj_x86/globals.o: cpp_framework/cthread.h cpp_framework/netsock.h
+obj_x86/globals.o: stat_thread.h
+obj_x86/main.o: cpp_framework/cmd_line.h globals.h demo_server.h
+obj_x86/main.o: cmd_server_base.h cpp_framework/cthread.h
+obj_x86/main.o: cpp_framework/netsock.h stat_thread.h
+obj_x86/stat_thread.o: globals.h demo_server.h cmd_server_base.h
+obj_x86/stat_thread.o: cpp_framework/cthread.h cpp_framework/netsock.h
+obj_x86/stat_thread.o: stat_thread.h

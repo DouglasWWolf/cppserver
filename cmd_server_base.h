@@ -109,7 +109,7 @@ protected:
     void    fail(const char* failure, const char* fmt = nullptr, ...);
 
     // This is a convenience method for reporting a syntax error
-    void    fail_syntax() {send("fail syntax\r\n");}
+    void    fail_syntax() {send("FAIL syntax\r\n");}
 
     // This will be true once the server thread is initialized and fully functional
     bool    m_is_initialized;

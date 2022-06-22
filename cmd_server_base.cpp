@@ -14,6 +14,9 @@ static vector<string> parse_tokens(const char* in)
     vector<string> result;
     char           token[512];
 
+    // The size of the buffer, allowing for a nul-byte to be padded at the end
+    const int buffer_size = sizeof(token) - 1;
+
     // If we weren't given an input string, return an empty result;
     if (in == nullptr) return result;
 
@@ -52,8 +55,8 @@ static vector<string> parse_tokens(const char* in)
             // Otherwise, we're not parsing a quoted string. A space or comma ends the token
             else if (*in == ' ' || *in == ',') break;
 
-            // Append this character to the token buffer
-            *out++ = *in++;
+            // If this character will fit into the token buffer, append it
+            if ((out - token) < buffer_size) *out++ = *in++;
         }
 
         // nul-terminate the token string

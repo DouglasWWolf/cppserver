@@ -9,7 +9,7 @@ using namespace std;
 // A command line parser
 CCmdLine    CmdLine;
 
-// If the user wants to generate file-stat events, this is the name of the file
+// If the user wants to generate file-stat events, this is the default name of the file
 string stat_file = "file.txt";
 
 int main(int argc, char** argv)

@@ -43,7 +43,7 @@ CXXFLAGS =	\
 -Wno-sign-compare \
 -Wno-unused-result \
 -Wno-strict-aliasing \
--std=c++11 \
+-std=c++17 \
 -fcommon \
 -I$(CPPUTILS_DIR) $(CPPFW) \
 -DLINUX 

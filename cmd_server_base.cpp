@@ -1,10 +1,9 @@
 #include <unistd.h>
-#include <stdarg.h>
 #include <vector>
 #include <string>
 #include <string.h>
-
 #include "cmd_server_base.h"
+#include "cvsprintf.h"
 using namespace std;
 
 //==========================================================================================================
@@ -379,7 +378,7 @@ void CCmdServerBase::send(const char* buffer, int length)
 //==========================================================================================================
 void CCmdServerBase::sendf(const char* fmt, ...)
 {
-    char buffer[1000];
+    Cvsprintf vs;
 
     // This is a pointer to the variable argument list
     va_list ap;
@@ -388,7 +387,7 @@ void CCmdServerBase::sendf(const char* fmt, ...)
     va_start(ap, fmt);
 
     // Perform a printf of our arguments into the buffer area;
-    vsprintf(buffer, fmt, ap);
+    const char* buffer = vs.printf(fmt, ap);
 
     // Tell the system that we're done with the "ap"
     va_end(ap);
@@ -407,38 +406,30 @@ void CCmdServerBase::sendf(const char* fmt, ...)
 //==========================================================================================================
 void CCmdServerBase::pass(const char* fmt, ...)
 {
-    char buffer[512] = "ok\0";
-
-    // This is a pointer to the variable argument list
-    va_list ap;
-
-    // Point to the position immediately after the OK
-    char* out = buffer+2;
+    Cvsprintf vs;
+    va_list   ap;
+    char      *buffer = "ok\r\n";
 
     // If the caller gave us parameters to send...
     if (fmt)
     {
-        // Add a space after the OK
-        *out++ = ' ';
-
         // Point to the first argument after the "fmt" parameter
         va_start(ap, fmt);
 
         // Perform a printf of our arguments into the buffer area
-        vsprintf(out, fmt, ap);
+        buffer = vs.printf(fmt, ap, "ok ", 2);
 
         // Tell the system that we're done with the "ap"
         va_end(ap);
 
         // Find the nul-byte at the end of the buffer
-        out = strchr(buffer, 0);
+        char* out = strchr(buffer, 0);
+
+        // Add a carriage return and linefeed
+        *out++ = '\r';
+        *out++ = '\n';
     }
     
-
-    // Add a carriage return and linefeed
-    *out++ = '\r';
-    *out++ = '\n';
-
     // And send that string to the client
     send(buffer);
 }
@@ -451,13 +442,15 @@ void CCmdServerBase::pass(const char* fmt, ...)
 //========================================================a==================================================
 void CCmdServerBase::fail(const char* failure, const char* fmt, ...)
 {
-    char buffer[512] = "fail ";
+    Cvsprintf vs;
+    char      prefix[64];
+    va_list   ap;
+    
+    // The prefix now contains "fail <failure><nul-byte>"
+    snprintf(prefix, sizeof prefix, "fail %s", failure);
 
-    // This is a pointer to the variable argument list
-    va_list ap;
-
-    // Stuff the failure code into the buffer
-    strcpy(buffer + 5, failure);
+    // For the moment, assume our prefix is the only thing we'll be outputting
+    char* buffer = prefix;
 
     // Point to the position immediately after the failure message
     char* out = strchr(buffer, 0);
@@ -465,14 +458,14 @@ void CCmdServerBase::fail(const char* failure, const char* fmt, ...)
     // If the caller gave us parameters to send...
     if (fmt)
     {
-        // Add a space after the OK
+        // Add a space after the prefix
         *out++ = ' ';
 
         // Point to the first argument after the "fmt" parameter
         va_start(ap, fmt);
 
         // Perform a printf of our arguments into the buffer area
-        vsprintf(out, fmt, ap);
+        buffer = vs.printf(fmt, ap, prefix, 2);
 
         // Tell the system that we're done with the "ap"
         va_end(ap);
@@ -481,7 +474,6 @@ void CCmdServerBase::fail(const char* failure, const char* fmt, ...)
         out = strchr(buffer, 0);
     }
    
-
     // Add a carriage return and linefeed
     *out++ = '\r';
     *out++ = '\n';

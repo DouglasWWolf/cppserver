@@ -4,6 +4,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <mutex>
 #include "cthread.h"
 #include "netsock.h"
 
@@ -129,6 +130,6 @@ private:
     NetSock m_socket;
 
     // This protects the "send()" routine to make it thread-safe
-    CMutex  m_send_mutex;
+    std::mutex m_send_mutex;
 };
 //----------------------------------------------------------------------------------------------------------

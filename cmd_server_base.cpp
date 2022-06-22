@@ -370,7 +370,7 @@ void CCmdServerBase::send(const char* buffer, int length)
 
 
 //==========================================================================================================
-// sendf() - Sends a printf-style formatt data to the the other side of a connected socket
+// sendf() - Sends a printf-style formatted data to the the other side of a connected socket
 //
 // Returns either : -1 = An error occured
 //                  Anything else = the number of bytes actually sent.  The entire string will always be

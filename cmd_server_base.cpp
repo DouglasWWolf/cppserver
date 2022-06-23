@@ -347,6 +347,9 @@ void CCmdServerBase::start(cmd_server_t* p_params)
 //==========================================================================================================
 void CCmdServerBase::send(const char* buffer, int length)
 {
+    // Mutexes must exist statically, not on the stack
+    static mutex mtx;
+
     // If the caller didn't specify a length, compute it
     if (length == -1) length = strlen(buffer);
 
@@ -360,13 +363,13 @@ void CCmdServerBase::send(const char* buffer, int length)
     if (m_verbose) printf("<< %s", buffer);
 
     // Ensure that only one thread at a time can write to the socket
-    m_send_mutex.lock();
+    mtx.lock();
     
     // Send the string to the connected client
     m_socket.send(buffer, length);
 
     // Allow other threads to send data on over the socket
-    m_send_mutex.unlock();
+    mtx.unlock();
 }
 //==========================================================================================================
 

@@ -128,8 +128,5 @@ private:
 
     // This is the network socket that will be our server socket
     NetSock m_socket;
-
-    // This protects the "send()" routine to make it thread-safe
-    std::mutex m_send_mutex;
 };
 //----------------------------------------------------------------------------------------------------------

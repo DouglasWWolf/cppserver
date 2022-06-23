@@ -135,7 +135,7 @@ string server_command_t::get_first(bool force_lower)
     // If we're supposed to force it to lower-case, do so
     if (force_lower) make_lower(cmd);
 
-    // After a "get_first)", the next subsequent call to get_next() should return the first parameter
+    // After a "get_first()", the next subsequent call to get_next() should return the first parameter
     m_next_index = 1;
 
     // Hand the caller the command

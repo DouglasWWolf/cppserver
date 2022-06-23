@@ -267,7 +267,7 @@ bool server_command_t::get_next(unsigned int *p_result)
 //==========================================================================================================
 // main() - This is the entry point of the new thread when it spawns
 //==========================================================================================================
-void CCmdServerBase::main(void* p1, void* p2, void* p3)
+void CCmdServerBase::main()
 {
 
 wait_for_connection:
@@ -276,7 +276,7 @@ wait_for_connection:
 
     // If we're in verbose mode, tell the user that we're creating a server
     if (m_verbose) printf("Creating server on port %i\n", m_port);;
-    
+
     // Create the server
     if (!m_socket.create_server(m_port))
     {

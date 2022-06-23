@@ -98,7 +98,7 @@ protected:
 protected:
 
     // This is the entry point when the server thread spawns
-    void    main(void* p1=0, void* p2=0, void* p3=0);
+    void    main();
 
     // When handle_command() gets called, the command will be in m_line
     server_command_t m_line;

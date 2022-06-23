@@ -300,7 +300,7 @@ wait_for_connection:
     if (m_verbose) printf("A client has connected from %s\n", m_socket.get_peer_address().c_str());
 
     // While the socket is open, read and handle input lines
-    while (m_socket.get_line(buffer, sizeof buffer))
+    while (m_socket.getline(buffer, sizeof buffer))
     {
         // Convert tabs to spaces, and ignore the line if it's blank
         if (!convert_tabs_to_spaces(buffer)) continue;

@@ -17,7 +17,7 @@ EXE = cppserver
 # This is a list of directories that have compilable code in them.  If there
 # are no subdirectories, this line is must SUBDIRS = .
 #-----------------------------------------------------------------------------
-SUBDIRS = . cpp03_framework
+SUBDIRS = . cpp03_framework cpp_server
 #-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
@@ -43,7 +43,9 @@ CXXFLAGS =	\
 -Wno-strict-aliasing \
 -fcommon \
 -DLINUX \
--I cpp03_framework
+-I cpp03_framework \
+-I cpp_server
+
 
 #-----------------------------------------------------------------------------
 # Special compile time flags for ARM targets

@@ -8,6 +8,6 @@
 
 class CStatThread : public CThread
 {
-    protected: void main(void* p1=0, void* p2=0, void* p3=0);
+    protected: void main();   
 };
 

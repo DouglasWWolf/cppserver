@@ -4,9 +4,22 @@
 //==========================================================================================================
 #include <unistd.h>
 #include <string>
-#include <filesystem>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "globals.h"
 using namespace std;
+
+
+//==========================================================================================================
+// file_exists() - Returns true if the specified filename exists
+//==========================================================================================================
+static bool file_exists(string& filename)
+{
+    struct stat sb;
+    return (stat(filename.c_str(), &sb) == 0);
+}
+//==========================================================================================================
 
 
 //==========================================================================================================
@@ -14,13 +27,13 @@ using namespace std;
 //
 // Passed: p1 = Pointer to a std::string containing the filename 
 //==========================================================================================================
-void CStatThread::main(void* p1, void* p2, void* p3)
+void CStatThread::main()
 {
     // Convert p1 into a string reference
-    string& filename = *(string*)p1;
+    string& filename = *(string*)m_spawn_param[0];
 
     // Find out whether or not that file currently exists
-    bool prior_status = filesystem::exists(filename);
+    bool prior_status = file_exists(filename);
 
     // We're going to loop forever, generating events when the file status changes
     while (true)
@@ -29,7 +42,7 @@ void CStatThread::main(void* p1, void* p2, void* p3)
         usleep(1000000);
 
         // Does our file exist?
-        bool new_status = filesystem::exists(filename);
+        bool new_status = file_exists(filename);
 
         // If the state of that file has changed, issue a ".stat" event on the server
         if (new_status != prior_status)
